@@ -142,6 +142,7 @@ class OpenVisualizerWeb(eventBusClient.eventBusClient,Cmd):
         self.websrv.route(path='/updateroverlist/:updatemsg',             callback=self._updateRoverList)
         self.websrv.route(path='/motesdiscovery/:srcip',                  callback=self._motesDiscovery)
 
+
     @view('rovers.tmpl')
     def _showrovers(self):
         '''

@@ -46,6 +46,7 @@ components = {
   39: "CJOIN",
   40: "OPENOSCOAP",
   41: "CINFRARED",
+  42: "CLICKER",
 }
 
 errorDescriptions = {

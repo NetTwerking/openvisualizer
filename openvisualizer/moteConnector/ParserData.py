@@ -7,13 +7,15 @@ import logging
 log = logging.getLogger('ParserData')
 log.setLevel(logging.ERROR)
 log.addHandler(logging.NullHandler())
-
 import struct
+import csv
+import pandas as pd
 
 from pydispatch import dispatcher
 
 from ParserException import ParserException
 import Parser
+
 
 class ParserData(Parser.Parser):
     
@@ -22,11 +24,13 @@ class ParserData(Parser.Parser):
     
     IPHC_SAM       = 4
     IPHC_DAM       = 0
-    
-    UINJECT_MASK    = 'uinject'
-     
+    DONG = 'dongyeop'
+    CLICKER_MASK1    = 'licke'
+    SUM = 0.0
+    COUNT = 0
+    aggregation = {0x15:0, 0xdf:0, 0x05:0, 0xfb:0}
+    PDRs = {0x15:0, 0xdf:0, 0x05:0, 0xfb:0}
     def __init__(self):
-        
         # log
         log.info("create instance")
         
@@ -38,9 +42,10 @@ class ParserData(Parser.Parser):
           'asn_0_1',                   # H
          ]
     
-    
+
     #======================== public ==========================================
-    
+    def getInfo(self, MAC, COUNT, CURRENT_DELAY, AVG_DELAY, ANSWER):
+        return MAC, COUNT, CURRENT_DELAY, AVG_DELAY, ANSWER
     def parseInput(self,input):
         # log
         if log.isEnabledFor(logging.DEBUG):
@@ -81,13 +86,41 @@ class ParserData(Parser.Parser):
          
         # cross layer trick here. capture UDP packet from udpLatency and get ASN to compute latency.
         if len(input) >37:
-            if self.UINJECT_MASK == ''.join(chr(i) for i in input[-7:]):
+            if self.CLICKER_MASK1 == ''.join(chr(i) for i in input[-5:]):
+                answer   = ''.join(chr(i) for i in input[-7:])
+                PDR = ord(answer[0])
+                self.PDRs[source[7]] = PDR
                 aux      = input[len(input)-14:len(input)-9]  # last 5 bytes of the packet are the ASN in the UDP latency packet
                 diff     = self._asndiference(aux,asnbytes)   # calculate difference 
                 timeinus = diff*self.MSPERSLOT                # compute time in ms
                 SN       = input[len(input)-9:len(input)-7]   # SN sent by mote
                 l3_source= "{0:x}{1:x}".format(input[len(input)-16], input[len(input)-15]) # mote id
-
+                f = open('C:/DelayTest/result.txt', 'a')
+                f2 = open('C:/DelayTest/aggregations.txt', 'a')
+                f3 = open('C:/DelayTest/PDR.txt', 'a')
+                self.COUNT += 1
+                self.SUM += diff
+                nth = ''.join(hex(i) for i in input[len(input)-14:len(input)-9])
+                f.write("MAC : %x , COUNT : %i , Current Delay : %i , Avg Delay : %.2f, Answer : %s Nth : %s\n" %(source[7], self.COUNT, diff, self.SUM/self.COUNT, answer, aux))
+                self.aggregation[source[7]] += 1
+                for key in self.aggregation:
+                    f2.write("%x : %i " %(key, self.aggregation[key]))
+                PDRSum=0
+                for key in self.PDRs:
+                    f3.write("%x pdr : %d, " %(key, self.PDRs[key]))
+                    PDRSum += self.PDRs[key]
+                PDRrate = float(PDRSum)/float(self.COUNT)
+                f3.write("\n PDR rate: %f\n" %(PDRrate))
+                f2.write("\n")
+                f.close()
+                f2.close()
+                f3.close()
+                f4 = open('C:\\DelayTest\\clicker.csv','a')
+                wr = csv.writer(f4)
+                wr.writerow([1,'ek', 'pusan'])
+                wr.writerow([2,'ss', 'seoul'])
+ 
+                f4.close()
                 pass
                 # in case we want to send the computed time to internet..
                 # computed=struct.pack('<H', timeinus)#to be appended to the pkt
@@ -99,11 +132,11 @@ class ParserData(Parser.Parser):
                 pass     
         else:
             pass      
-       
+        
         eventType='data'
         # notify a tuple including source as one hop away nodes elide SRC address as can be inferred from MAC layer header
         return eventType, (source, input)
-
+        
  #======================== private =========================================
  
     def _asndiference(self,init,end):
@@ -114,7 +147,7 @@ class ParserData(Parser.Parser):
           return 0xFFFFFFFF
        else:
            pass
-       
+        
        diff = 0
        if asnend[1] == asninit[1]:#'bytes2and3'
           return asnend[0]-asninit[0]#'bytes0and1'
