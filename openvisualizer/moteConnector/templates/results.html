@@ -10,6 +10,14 @@
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
         <link href="../static/css/styles.css" rel="stylesheet" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+        <style>
+            table {
+                border : 1px solid #000;
+            }
+            th, tr, td {
+                border : 1px solid #000;
+            }
+        </style>
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -48,6 +56,20 @@
                             <li class="breadcrumb-item active">결과페이지입니다.</li>
                         </ol>
                     </div>
+                    <table border>
+                        <thead>
+                            <th>MAC</th>
+                            <th>answer</th>
+                        </thead>
+                        <tbody>
+                            {% for mac in mac_list %}
+                                <tr>
+                                    <td><a>{{mac}}</a></td>
+                                    <td><a>{{result_list[mac]}}</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </main>
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid px-4">
