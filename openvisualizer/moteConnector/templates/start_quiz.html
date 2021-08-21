@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>MyClicker-Quiz</title>
+        <title>MyClicker-StartQuiz</title>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
         <link href="../static/css/styles.css" rel="stylesheet" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
@@ -43,31 +43,10 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Quiz</h1>
-                        <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">질문과 보기를 적고 완료를 누르세요. 정해진 시간동안 정답을 입력받습니다.</li>
-                        </ol>
-                    </div>
-                    <div class="col-xl-10" style="margin-left: 20px">
-                        <form action="/start_quiz" method="POST">
-                            <label for="question">Question:</label><br>
-                            <textarea name="question" rows="10" cols="30" placeholder="질문을 입력하세요."></textarea>
-                            <br>
-                            <label for="O">Options:</label><br>
-                            <textarea name="option1" class="textarea-ex" placeholder="보기1"></textarea>
-                            <textarea name="option2" class="textarea-ex" placeholder="보기2"></textarea>
-                            <br>
-                            <div class="row" style="margin-top: 20px">
-                                <div class="col-xl-8">
-                                    <label for="quiz_time">Time:</label>
-                                    <input type="number" id="quiz_time" name="quiz_time" min="5" max="100" step="5" value="30">
-                                    <label for="quiz_time">초</label>
-                                </div>
-                                <div class="col-xl-1">
-                                    <input type="submit" value="완료">
-                                </div>
-                            </div>
-                        </form> 
+                        <!-- 자동 줄바꿈 -->
+                        <p class="mt-4 text-center" style="font-size: 90px; word-break: break-all">{{question}}</p>
+                        <p class="card" style="font-size: 50px; background-color: #0d6efd;"><strong>O</strong> {{option1}}</p>
+                        <p class="card" style="font-size: 50px; background-color: #dc3545;"><strong>X</strong> {{option2}}</p>
                     </div>
                 </main>
                 <footer class="py-4 bg-light mt-auto">
