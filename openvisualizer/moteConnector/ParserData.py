@@ -28,7 +28,7 @@ class ParserData(Parser.Parser):
     CLICKER_MASK1    = 'licke'
     SUM = 0.0
     COUNT = 0
-    aggregation = {0x15:0, 0xdf:0, 0x05:0, 0xfb:0}
+    aggregation = {0x3b:0, 0xdf:0, 0x05:0, 0xfb:0}
     PDRs = {0x15:0, 0xdf:0, 0x05:0, 0xfb:0}
     def __init__(self):
         # log
