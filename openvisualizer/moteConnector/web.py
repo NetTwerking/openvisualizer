@@ -5,6 +5,10 @@ import csv
 from werkzeug.utils import redirect
 app = Flask(__name__)
 
+mac_list = ['0x15']
+
+
+
 @app.route('/', methods=['GET','POST'])
 @app.route('/index', methods=['GET','POST'])
 def Show_Clicker():
@@ -29,13 +33,16 @@ def Start_Quiz():
    
 @app.route('/results', methods=['GET','POST'])
 def Show_Result():
-    #f = open('C:\DelayTest\clicker.csv', 'r')
-    #rdr = csv.reader(f)
-    #data = []
-    #for i in rdr:
-        #data.append(i)
-
-    return render_template('results.html') 
+    result_list = {}
+    for mac in mac_list:
+        read_dir = 'C:\\DelayTest\\' + mac + '.csv'
+        f = open(read_dir, 'r')
+        csv_reader = csv.reader(f)
+        for line in csv_reader :
+            print(line[1])
+            result_list[mac] = line[1]
+        f.close()
+    return render_template('results.html', result_list = result_list, mac_list = mac_list) 
 
 if __name__ == '__main__':
     app.run()

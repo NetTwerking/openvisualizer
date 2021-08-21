@@ -87,7 +87,8 @@ class ParserData(Parser.Parser):
         # cross layer trick here. capture UDP packet from udpLatency and get ASN to compute latency.
         if len(input) >37:
             if self.CLICKER_MASK1 == ''.join(chr(i) for i in input[-5:]):
-                answer   = ''.join(chr(i) for i in input[-7:])
+                #answer   = ''.join(chr(i) for i in input[-7:])
+                answer = chr(input[-6])
                 PDR = ord(answer[0])
                 self.PDRs[source[7]] = PDR
                 aux      = input[len(input)-14:len(input)-9]  # last 5 bytes of the packet are the ASN in the UDP latency packet
@@ -101,6 +102,8 @@ class ParserData(Parser.Parser):
                 self.COUNT += 1
                 self.SUM += diff
                 nth = ''.join(hex(i) for i in input[len(input)-14:len(input)-9])
+                MAC = hex(source[7])
+                
                 f.write("MAC : %x , COUNT : %i , Current Delay : %i , Avg Delay : %.2f, Answer : %s Nth : %s\n" %(source[7], self.COUNT, diff, self.SUM/self.COUNT, answer, aux))
                 self.aggregation[source[7]] += 1
                 for key in self.aggregation:
@@ -115,11 +118,10 @@ class ParserData(Parser.Parser):
                 f.close()
                 f2.close()
                 f3.close()
-                f4 = open('C:\\DelayTest\\clicker.csv','a')
+                AnswerDir = 'C:\\DelayTest\\' + str(MAC) + '.csv' 
+                f4 = open(AnswerDir,'w')
                 wr = csv.writer(f4)
-                wr.writerow([1,'ek', 'pusan'])
-                wr.writerow([2,'ss', 'seoul'])
- 
+                wr.writerow([MAC, answer, self.Calc_Asn(aux)])
                 f4.close()
                 pass
                 # in case we want to send the computed time to internet..
@@ -159,3 +161,9 @@ class ParserData(Parser.Parser):
               diff = 0xFFFFFFFF
        
        return diff
+
+    def Calc_Asn(self, asn):
+        result = 0
+        for i in range(0,5):
+            result += asn[i] * (256**i)
+        return result
