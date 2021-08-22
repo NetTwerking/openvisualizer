@@ -9,8 +9,6 @@ app = Flask(__name__)
 
 mac_list = ['0x15']
 
-
-
 @app.route('/', methods=['GET','POST'])
 @app.route('/index', methods=['GET','POST'])
 def Show_Clicker():
