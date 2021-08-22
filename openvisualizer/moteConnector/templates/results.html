@@ -60,12 +60,14 @@
                         <thead>
                             <th>MAC</th>
                             <th>answer</th>
+                            <th>ASN</th>
                         </thead>
                         <tbody>
-                            {% for mac in mac_list %}
+                            {% for result in result_list %}
                                 <tr>
-                                    <td><a>{{mac}}</a></td>
-                                    <td><a>{{result_list[mac]}}</a></td>
+                                    <td><a>{{result[0]}}</a></td>
+                                    <td><a>{{result[1]}}</a></td>
+                                    <td><a>{{result[2]}}</a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
