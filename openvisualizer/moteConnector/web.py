@@ -3,9 +3,13 @@ from flask import Flask, render_template, url_for, request
 import csv
 
 from werkzeug.utils import redirect
+import time
+
 app = Flask(__name__)
 
-mac_list = ['0x15','0x16','0x17','0x18']
+mac_list = ['0x15']
+
+
 
 @app.route('/', methods=['GET','POST'])
 @app.route('/index', methods=['GET','POST'])
@@ -29,6 +33,10 @@ def Start_Quiz():
     _option1 = request.form['option1']
     _option2 = request.form['option2']
     _time = request.form['quiz_time']
+    now = time.localtime()
+    f5 = open('C:/DelayTest/time.txt', 'w')
+    f5.write("%d" %(now.tm_min*60 + now.tm_sec+int(_time)))
+    f5.close()
     return render_template('start_quiz.html', question=_question, option1 = _option1, option2 = _option2, quiz_time = _time)
    
 @app.route('/results', methods=['GET','POST'])
