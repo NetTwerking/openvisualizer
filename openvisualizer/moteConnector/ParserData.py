@@ -10,12 +10,11 @@ log.addHandler(logging.NullHandler())
 import struct
 import csv
 import pandas as pd
-
 from pydispatch import dispatcher
 
 from ParserException import ParserException
 import Parser
-
+import time
 
 class ParserData(Parser.Parser):
     
@@ -28,8 +27,8 @@ class ParserData(Parser.Parser):
     CLICKER_MASK1    = 'licke'
     SUM = 0.0
     COUNT = 0
-    aggregation = {0x3b:0, 0xdf:0, 0x05:0, 0xfb:0}
-    PDRs = {0x15:0, 0xdf:0, 0x05:0, 0xfb:0}
+    aggregation = {0x3b:0, 0xdf:0, 0x05:0, 0xfb:0, 0x15:0}
+    PDRs = {0x15:0, 0xdf:0, 0x05:0, 0xfb:0, 0x15:0}
     def __init__(self):
         # log
         log.info("create instance")
@@ -47,6 +46,7 @@ class ParserData(Parser.Parser):
     def getInfo(self, MAC, COUNT, CURRENT_DELAY, AVG_DELAY, ANSWER):
         return MAC, COUNT, CURRENT_DELAY, AVG_DELAY, ANSWER
     def parseInput(self,input):
+
         # log
         if log.isEnabledFor(logging.DEBUG):
             log.debug("received data {0}".format(input))
@@ -118,11 +118,18 @@ class ParserData(Parser.Parser):
                 f.close()
                 f2.close()
                 f3.close()
+                f5 = open('C:/DelayTest/time.txt', 'r')
+                now = time.localtime()
+                now_time = now.tm_sec + (now.tm_min*60)
+                limit_time = int(f5.readline())
                 AnswerDir = 'C:\\DelayTest\\' + str(MAC) + '.csv' 
-                f4 = open(AnswerDir,'w')
-                wr = csv.writer(f4)
-                wr.writerow([MAC, answer, self.Calc_Asn(aux)])
-                f4.close()
+
+                if now_time < limit_time:
+                    f4 = open(AnswerDir,'w')
+                    wr = csv.writer(f4)
+                    wr.writerow([MAC, answer, self.Calc_Asn(aux)])
+                    f4.close()
+                f5.close()
                 pass
                 # in case we want to send the computed time to internet..
                 # computed=struct.pack('<H', timeinus)#to be appended to the pkt
