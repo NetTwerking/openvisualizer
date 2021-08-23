@@ -28,7 +28,7 @@ class ParserData(Parser.Parser):
     SUM = 0.0
     COUNT = 0
     aggregation = {0x3b:0, 0xdf:0, 0x05:0, 0xfb:0, 0x15:0}
-    PDRs = {0x15:0, 0xdf:0, 0x05:0, 0xfb:0, 0x15:0}
+    PDRs = {0xdf:0, 0x05:0, 0xfb:0, 0x15:0}
     def __init__(self):
         # log
         log.info("create instance")
@@ -40,7 +40,12 @@ class ParserData(Parser.Parser):
           'asn_2_3',                   # H
           'asn_0_1',                   # H
          ]
-    
+        f = open('C:/DelayTest/result.txt', 'w')
+        f2 = open('C:/DelayTest/aggregations.txt', 'w')
+        f3 = open('C:/DelayTest/PDR.txt', 'w')
+        f.close()
+        f2.close()
+        f3.close()
 
     #======================== public ==========================================
     def getInfo(self, MAC, COUNT, CURRENT_DELAY, AVG_DELAY, ANSWER):
@@ -89,7 +94,7 @@ class ParserData(Parser.Parser):
             if self.CLICKER_MASK1 == ''.join(chr(i) for i in input[-5:]):
                 #answer   = ''.join(chr(i) for i in input[-7:])
                 answer = chr(input[-6])
-                PDR = ord(answer[0])
+                PDR = input[-7]
                 self.PDRs[source[7]] = PDR
                 aux      = input[len(input)-14:len(input)-9]  # last 5 bytes of the packet are the ASN in the UDP latency packet
                 diff     = self._asndiference(aux,asnbytes)   # calculate difference 
@@ -121,9 +126,13 @@ class ParserData(Parser.Parser):
                 f5 = open('C:/DelayTest/time.txt', 'r')
                 now = time.localtime()
                 now_time = now.tm_sec + (now.tm_min*60)
-                limit_time = int(f5.readline())
+                txt_time = f5.readline()
+                if len(txt_time) > 0 :
+                    limit_time = int(txt_time)
+                else :
+                    limit_time = 0
                 AnswerDir = 'C:\\DelayTest\\' + str(MAC) + '.csv' 
-
+                
                 if now_time < limit_time:
                     f4 = open(AnswerDir,'w')
                     wr = csv.writer(f4)
