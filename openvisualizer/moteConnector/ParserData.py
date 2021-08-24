@@ -95,7 +95,9 @@ class ParserData(Parser.Parser):
                 #answer   = ''.join(chr(i) for i in input[-7:])
                 answer = chr(input[-6])
                 PDR = input[-7]
-                self.PDRs[source[7]] = PDR
+                if self.PDRs[source[7]] != PDR:
+                    self.PDRs[source[7]] = PDR
+                    self.COUNT += 1
                 aux      = input[len(input)-14:len(input)-9]  # last 5 bytes of the packet are the ASN in the UDP latency packet
                 diff     = self._asndiference(aux,asnbytes)   # calculate difference 
                 timeinus = diff*self.MSPERSLOT                # compute time in ms
@@ -104,7 +106,6 @@ class ParserData(Parser.Parser):
                 f = open('C:/DelayTest/result.txt', 'a')
                 f2 = open('C:/DelayTest/aggregations.txt', 'a')
                 f3 = open('C:/DelayTest/PDR.txt', 'a')
-                self.COUNT += 1
                 self.SUM += diff
                 nth = ''.join(hex(i) for i in input[len(input)-14:len(input)-9])
                 MAC = hex(source[7])
