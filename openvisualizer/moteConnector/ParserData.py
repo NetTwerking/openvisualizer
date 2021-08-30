@@ -27,8 +27,8 @@ class ParserData(Parser.Parser):
     CLICKER_MASK1    = 'licke'
     SUM = 0.0
     COUNT = 0
-    aggregation = {0x3b:0, 0xdf:0, 0x05:0, 0xfb:0, 0x15:0}
-    PDRs = {0xdf:0, 0x05:0, 0xfb:0, 0x15:0}
+    aggregation = {0x3a:0, 0x24:0, 0x36:0, 0x28:0}
+    PDRs = {0x3a:0, 0x24:0, 0x36:0, 0x28:0}
     def __init__(self):
         # log
         log.info("create instance")
@@ -40,12 +40,13 @@ class ParserData(Parser.Parser):
           'asn_2_3',                   # H
           'asn_0_1',                   # H
          ]
-        f = open('C:/DelayTest/result.txt', 'w')
-        f2 = open('C:/DelayTest/aggregations.txt', 'w')
-        f3 = open('C:/DelayTest/PDR.txt', 'w')
-        f.close()
+        f1 = open('C:/DelayTest/result.csv', 'w')
+        wr1 = csv.writer(f1)
+        wr1.writerow(["MAC", "COUNT", "Current Delay(ms)", "Avg Delay(ms)", "Answer", "ASN", "Aggregation"])
+    
+        f2 = open('C:/DelayTest/PDR.txt', 'w')
+        f1.close()
         f2.close()
-        f3.close()
 
     #======================== public ==========================================
     def getInfo(self, MAC, COUNT, CURRENT_DELAY, AVG_DELAY, ANSWER):
@@ -103,31 +104,26 @@ class ParserData(Parser.Parser):
                 timeinus = diff*self.MSPERSLOT                # compute time in ms
                 SN       = input[len(input)-9:len(input)-7]   # SN sent by mote
                 l3_source= "{0:x}{1:x}".format(input[len(input)-16], input[len(input)-15]) # mote id
-                f = open('C:/DelayTest/result.txt', 'a')
-                f2 = open('C:/DelayTest/aggregations.txt', 'a')
-                f3 = open('C:/DelayTest/PDR.txt', 'a')
+                f1 = open('C:/DelayTest/result.csv', 'a')
+                f2 = open('C:/DelayTest/PDR.txt', 'a')
                 self.SUM += diff
                 nth = ''.join(hex(i) for i in input[len(input)-14:len(input)-9])
                 MAC = hex(source[7])
-                
-                f.write("MAC : %x , COUNT : %i , Current Delay : %i , Avg Delay : %.2f, Answer : %s Nth : %s\n" %(source[7], self.COUNT, diff, self.SUM/self.COUNT, answer, aux))
                 self.aggregation[source[7]] += 1
-                for key in self.aggregation:
-                    f2.write("%x : %i " %(key, self.aggregation[key]))
+                wr1 = csv.writer(f1)
+                wr1.writerow([MAC, self.COUNT, diff * 10, self.SUM/self.COUNT * 10, answer, self.Calc_Asn(aux), self.aggregation[source[7]]])
                 PDRSum=0
                 for key in self.PDRs:
-                    f3.write("%x pdr : %d, " %(key, self.PDRs[key]))
+                    f2.write("%x pdr : %d, " %(key, self.PDRs[key]))
                     PDRSum += self.PDRs[key]
                 PDRrate = float(PDRSum)/float(self.COUNT)
-                f3.write("\n PDR rate: %f\n" %(PDRrate))
-                f2.write("\n")
-                f.close()
+                f2.write("\n PDR rate: %f\n" %(PDRrate))
+                f1.close()
                 f2.close()
-                f3.close()
-                f5 = open('C:/DelayTest/time.txt', 'r')
+                f3 = open('C:/DelayTest/time.txt', 'r')
                 now = time.localtime()
                 now_time = now.tm_sec + (now.tm_min*60)
-                txt_time = f5.readline()
+                txt_time = f3.readline()
                 if len(txt_time) > 0 :
                     limit_time = int(txt_time)
                 else :
@@ -139,7 +135,7 @@ class ParserData(Parser.Parser):
                     wr = csv.writer(f4)
                     wr.writerow([MAC, answer, self.Calc_Asn(aux)])
                     f4.close()
-                f5.close()
+                f3.close()
                 pass
                 # in case we want to send the computed time to internet..
                 # computed=struct.pack('<H', timeinus)#to be appended to the pkt
