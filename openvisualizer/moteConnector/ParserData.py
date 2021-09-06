@@ -27,8 +27,8 @@ class ParserData(Parser.Parser):
     CLICKER_MASK1    = 'licke'
     SUM = 0.0
     COUNT = 0
-    aggregation = {0x3a:0, 0x24:0, 0x36:0, 0x28:0}
-    PDRs = {0x3a:0, 0x24:0, 0x36:0, 0x28:0}
+    aggregation = {0xe7:0, 0xf5:0, 0xe8:0, 0xe1:0, 0xa8:0, 0x36:0, 0xe6:0, 0x00:0, 0xd0:0, 0x9a:0, 0x28:0,0xfc:0,0x24:0,0xdf:0,0x9d:0,0xab:0,0xee:0,0x04:0,0x15:0,0x3b:0}
+    PDRs = {0xe7:0, 0xf5:0, 0xe8:0, 0xe1:0, 0xa8:0, 0x36:0, 0xe6:0, 0x00:0, 0xd0:0, 0x9a:0, 0x28:0,0xfc:0,0x24:0,0xdf:0,0x9d:0,0xab:0,0xee:0,0x04:0,0x15:0,0x3b:0}
     def __init__(self):
         # log
         log.info("create instance")
@@ -43,8 +43,13 @@ class ParserData(Parser.Parser):
         f1 = open('C:/DelayTest/result.csv', 'w')
         wr1 = csv.writer(f1)
         wr1.writerow(["MAC", "COUNT", "Current Delay(ms)", "Avg Delay(ms)", "Answer", "ASN", "Aggregation"])
-    
-        f2 = open('C:/DelayTest/PDR.txt', 'w')
+        f2 = open('C:/DelayTest/PDR.csv', 'w')
+        wr2 = csv.writer(f2)
+        MAC_header = ""
+        for key in self.PDRs:
+            MAC_header += "%x," %(key)
+        MAC_header += "PDR rate\n"
+        f2.write(MAC_header)
         f1.close()
         f2.close()
 
@@ -105,7 +110,8 @@ class ParserData(Parser.Parser):
                 SN       = input[len(input)-9:len(input)-7]   # SN sent by mote
                 l3_source= "{0:x}{1:x}".format(input[len(input)-16], input[len(input)-15]) # mote id
                 f1 = open('C:/DelayTest/result.csv', 'a')
-                f2 = open('C:/DelayTest/PDR.txt', 'a')
+                f2 = open('C:/DelayTest/PDR.csv', 'a')
+                wr2 = csv.writer(f2)
                 self.SUM += diff
                 nth = ''.join(hex(i) for i in input[len(input)-14:len(input)-9])
                 MAC = hex(source[7])
@@ -113,11 +119,13 @@ class ParserData(Parser.Parser):
                 wr1 = csv.writer(f1)
                 wr1.writerow([MAC, self.COUNT, diff * 10, self.SUM/self.COUNT * 10, answer, self.Calc_Asn(aux), self.aggregation[source[7]]])
                 PDRSum=0
+                empty_str = ""
                 for key in self.PDRs:
-                    f2.write("%x pdr : %d, " %(key, self.PDRs[key]))
+                    empty_str += "%d," %(self.PDRs[key])
                     PDRSum += self.PDRs[key]
-                PDRrate = float(PDRSum)/float(self.COUNT)
-                f2.write("\n PDR rate: %f\n" %(PDRrate))
+                PDRrate = float(self.COUNT)/float(PDRSum)
+                empty_str += '%f\n' %(PDRrate)
+                f2.write(empty_str)
                 f1.close()
                 f2.close()
                 f3 = open('C:/DelayTest/time.txt', 'r')
