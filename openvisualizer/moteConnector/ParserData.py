@@ -24,11 +24,11 @@ class ParserData(Parser.Parser):
     IPHC_SAM       = 4
     IPHC_DAM       = 0
     DONG = 'dongyeop'
-    CLICKER_MASK1    = 'licke'
+    CLICKER_MASK1    = 'icke'
     SUM = 0.0
     COUNT = 0
-    aggregation = {0xe7:0, 0xf5:0, 0xe8:0, 0xe1:0, 0xa8:0, 0x36:0, 0xe6:0, 0x00:0, 0xd0:0, 0x9a:0, 0x28:0,0xfc:0,0x24:0,0xdf:0,0x9d:0,0xab:0,0xee:0,0x04:0,0x15:0,0x3b:0}
-    PDRs = {0xe7:0, 0xf5:0, 0xe8:0, 0xe1:0, 0xa8:0, 0x36:0, 0xe6:0, 0x00:0, 0xd0:0, 0x9a:0, 0x28:0,0xfc:0,0x24:0,0xdf:0,0x9d:0,0xab:0,0xee:0,0x04:0,0x15:0,0x3b:0}
+    aggregation = {0xe7:0, 0xf5:0, 0xe8:0, 0xe1:0, 0xa8:0, 0x36:0, 0xe6:0, 0x00:0, 0xd0:0, 0x9a:0, 0x28:0,0xfc:0,0x24:0,0xdf:0,0x9d:0,0xab:0,0xee:0,0x4:0,0x15:0,0x3b:0}
+    PDRs = {0xe7:0, 0xf5:0, 0xe8:0, 0xe1:0, 0xa8:0, 0x36:0, 0xe6:0, 0x00:0, 0xd0:0, 0x9a:0, 0x28:0,0xfc:0,0x24:0,0xdf:0,0x9d:0,0xab:0,0xee:0,0x4:0,0x15:0,0x3b:0}
     def __init__(self):
         # log
         log.info("create instance")
@@ -57,7 +57,6 @@ class ParserData(Parser.Parser):
     def getInfo(self, MAC, COUNT, CURRENT_DELAY, AVG_DELAY, ANSWER):
         return MAC, COUNT, CURRENT_DELAY, AVG_DELAY, ANSWER
     def parseInput(self,input):
-
         # log
         if log.isEnabledFor(logging.DEBUG):
             log.debug("received data {0}".format(input))
@@ -97,12 +96,14 @@ class ParserData(Parser.Parser):
          
         # cross layer trick here. capture UDP packet from udpLatency and get ASN to compute latency.
         if len(input) >37:
-            if self.CLICKER_MASK1 == ''.join(chr(i) for i in input[-5:]):
+            if self.CLICKER_MASK1 == ''.join(chr(i) for i in input[-4:]):
                 #answer   = ''.join(chr(i) for i in input[-7:])
                 answer = chr(input[-6])
+                MAC = hex(input[-5])
+                print('mac: ' + MAC)
                 PDR = input[-7]
-                if self.PDRs[source[7]] != PDR:
-                    self.PDRs[source[7]] = PDR
+                if self.PDRs[input[-5]] != PDR:
+                    self.PDRs[input[-5]] = PDR
                     self.COUNT += 1
                 aux      = input[len(input)-14:len(input)-9]  # last 5 bytes of the packet are the ASN in the UDP latency packet
                 diff     = self._asndiference(aux,asnbytes)   # calculate difference 
@@ -114,10 +115,11 @@ class ParserData(Parser.Parser):
                 wr2 = csv.writer(f2)
                 self.SUM += diff
                 nth = ''.join(hex(i) for i in input[len(input)-14:len(input)-9])
-                MAC = hex(source[7])
-                self.aggregation[source[7]] += 1
+                
+
+                self.aggregation[input[-5]] += 1
                 wr1 = csv.writer(f1)
-                wr1.writerow([MAC, self.COUNT, diff * 10, self.SUM/self.COUNT * 10, answer, self.Calc_Asn(aux), self.aggregation[source[7]]])
+                wr1.writerow([MAC, self.COUNT, diff * 10, self.SUM/self.COUNT * 10, answer, self.Calc_Asn(aux), self.aggregation[input[-5]]])
                 PDRSum=0
                 empty_str = ""
                 for key in self.PDRs:
