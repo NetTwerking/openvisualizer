@@ -100,7 +100,6 @@ class ParserData(Parser.Parser):
                 #answer   = ''.join(chr(i) for i in input[-7:])
                 answer = chr(input[-6])
                 MAC = hex(input[-5])
-                print('mac: ' + MAC)
                 PDR = input[-7]
                 if self.PDRs[input[-5]] != PDR:
                     self.PDRs[input[-5]] = PDR
