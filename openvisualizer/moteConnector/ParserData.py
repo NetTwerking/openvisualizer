@@ -19,7 +19,7 @@ import time
 class ParserData(Parser.Parser):
     
     HEADER_LENGTH  = 2
-    MSPERSLOT      = 20 #ms per slot.
+    MSPERSLOT      = 10 #ms per slot.
     
     IPHC_SAM       = 4
     IPHC_DAM       = 0
