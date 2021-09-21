@@ -129,7 +129,7 @@ class ParserData(Parser.Parser):
                 for key in self.PDRs:
                     empty_str += "%d," %(self.PDRs[key])
                     PDRSum += self.PDRs[key]
-                PDRrate = float(self.COUNT)/float(PDRSum)
+                PDRrate = float(self.COUNT)/9750
                 empty_str += '%f\n' %(PDRrate)
                 f2.write(empty_str)
                 f1.close()
