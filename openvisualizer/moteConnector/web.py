@@ -18,9 +18,11 @@ plt.rcParams['axes.unicode_minus'] = False
 
 app = Flask(__name__)
 
+
 mac_list = ['0x15','0xa1','0x65','0xee','0xe8','0xa4']
 x_label = ["o", "x"]
 quiz = []
+
 
 @app.route('/', methods=['GET','POST'])
 @app.route('/index', methods=['GET','POST'])
