@@ -7,7 +7,7 @@ import time
 
 app = Flask(__name__)
 
-mac_list = ['0x36', '0x28', '0x24']
+mac_list = ['0x67']
 
 @app.route('/', methods=['GET','POST'])
 @app.route('/index', methods=['GET','POST'])
