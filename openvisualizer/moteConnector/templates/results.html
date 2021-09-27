@@ -43,14 +43,18 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">MyClicker</h1>
-                        <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">결과페이지입니다.</li>
-                        </ol>
+                        <h1 class="mt-4">Results</h1>
+                    </div>
+                    <div class="card-header">
+                        <i class="far fa-chart-bar" aria-hidden="true"></i>
+                        응답 결과
+                    </div>
+                    <div class="card-body">
+                        <img src="/plot" alt="result image">
                     </div>
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i>
-                        (날짜 넣으면 될듯)
+                        {{date}}
                     </div>
                     <div class="card-body">
                         <table id="datatablesSimple">
