@@ -1,20 +1,11 @@
-from flask import Flask, render_template, url_for, request, send_file
+from flask import Flask, render_template, request
 # from STU_Notice import get_stu_notices
 import csv
-from io import BytesIO
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-import numpy as np
-import matplotlib.pyplot as plt
 import datetime
-from matplotlib import rc
-
 
 from werkzeug.utils import redirect
 import time
 
-rc('font', family='AppleGothic')
-
-plt.rcParams['axes.unicode_minus'] = False
 
 app = Flask(__name__)
 
@@ -77,6 +68,9 @@ def Show_Result():
 
     result_list = sorted(result_list, key=lambda result : result[2])
     date = datetime.datetime.now().replace(microsecond=0)
+
+    for i in range(0, 6):
+        result_list[i].append(str(i+1));
 
     return render_template('results.html', result_list = result_list, mac_list = mac_list, date = date, o = o_ratio, x = x_ratio,
     question = quiz[0], option1 = x_label[0], option2 = x_label[1]) 
