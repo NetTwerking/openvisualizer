@@ -17,7 +17,7 @@ import Parser
 import time
 
 class ParserData(Parser.Parser):
-    
+    TOTAL_PACKET = 7020.0
     HEADER_LENGTH  = 2
     MSPERSLOT      = 10 #ms per slot.
     
@@ -130,7 +130,7 @@ class ParserData(Parser.Parser):
                 for key in self.PDRs:
                     empty_str += "%d," %(self.PDRs[key])
                     PDRSum += self.PDRs[key]
-                PDRrate = float(self.COUNT)/7020.0
+                PDRrate = float(self.COUNT)/TOTAL_PACKET # received packet count / total packet
                 empty_str += '%f\n' %(PDRrate)
                 f2.write(empty_str)
                 f1.close()
