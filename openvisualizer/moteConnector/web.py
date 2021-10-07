@@ -9,18 +9,20 @@ import time
 
 app = Flask(__name__)
 
-mac_list = ['0x15','0xa1','0x65','0xee','0xe8','0xa4']
-x_label = ["o", "x"]
+mac_list = ['0x15','0xa1','0x65','0xee','0xe8','0xa4'] # mac list -> 직접 등록 필요
+x_label = ["o", "x"] # 문제 입력 없을 시 기본 값
 quiz = ["결과입니다"]
 
+# home page #
 @app.route('/', methods=['GET','POST'])
 @app.route('/index', methods=['GET','POST'])
 def Show_Clicker():
     return render_template('index.html')
 
+# make a quiz page #
 @app.route('/quiz', methods=['GET','POST'])
 def Show_Quiz():
-    if request.method == 'POST':
+    if request.method == 'POST': # form으로 입력 받은 정보 넘겨주기 
         _question = request.form['question']
         _option1 = request.form['option1']
         _option2 = request.form['option2']
@@ -29,29 +31,32 @@ def Show_Quiz():
     elif request.method == 'GET':
         return render_template('quiz.html')
 
+# show quiz #
 @app.route('/start_quiz', methods=['GET','POST'])
-def Start_Quiz():
+def Start_Quiz(): # Show_Quiz()에서 넘겨온 정보 출력
     _question = request.form['question']
-    quiz[0] = _question
+    quiz[0] = _question # 결과 페이지 출력에서 사용될 문자열 받아오기
     _option1 = request.form['option1']
     x_label[0] = _option1
     _option2 = request.form['option2']
     x_label[1] = _option2
     _time = request.form['quiz_time']
     now = time.localtime()
-    f5 = open('/Users/songjihye/Desktop/time.txt', 'w')
+    f5 = open('/Users/songjihye/Desktop/time.txt', 'w') # 퀴즈 시간값 파일 저장으로 넘겨줌 경로 주의
     f5.write("%d" %(now.tm_min*60 + now.tm_sec+int(_time)))
     f5.close()
     return render_template('start_quiz.html', question=_question, option1 = _option1, option2 = _option2, quiz_time = _time)
    
+# result page #
 @app.route('/results', methods=['GET','POST'])
 def Show_Result():
     result_list = []
     o = 0
     x = 0
 
+    # 응답 결과 집계 #
     for mac in mac_list:
-        read_dir = '/Users/songjihye/Desktop/' + mac + '.csv'
+        read_dir = '/Users/songjihye/Desktop/' + mac + '.csv' # 경로 주의
         f = open(read_dir, 'r')
         csv_reader = csv.reader(f)
         for line in csv_reader :
@@ -66,9 +71,11 @@ def Show_Result():
         o_ratio = int(o/(o+x)*100)
         x_ratio = int(x/(o+x)*100)
 
+    # html 넘겨주기 #
     result_list = sorted(result_list, key=lambda result : result[2])
-    date = datetime.datetime.now().replace(microsecond=0)
+    date = datetime.datetime.now().replace(microsecond=0) # 현재 시간
 
+    # 등수 출력용 임의 코드, 수정 필요 #
     for i in range(0, 6):
         result_list[i].append(str(i+1));
 
