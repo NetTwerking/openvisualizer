@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request
 # from STU_Notice import get_stu_notices
 import csv
@@ -6,11 +7,11 @@ import datetime
 from werkzeug.utils import redirect
 import time
 
-
 app = Flask(__name__)
 
 mac_list = ['0x15','0xa1','0x65','0xee','0xe8','0xa4'] # mac list -> 직접 등록 필요
 x_label = ["o", "x"] # 문제 입력 없을 시 기본 값
+
 quiz = ["결과입니다"]
 
 # home page #
@@ -42,7 +43,7 @@ def Start_Quiz(): # Show_Quiz()에서 넘겨온 정보 출력
     x_label[1] = _option2
     _time = request.form['quiz_time']
     now = time.localtime()
-    f5 = open('/Users/songjihye/Desktop/time.txt', 'w') # 퀴즈 시간값 파일 저장으로 넘겨줌 경로 주의
+    f5 = open('C:/DelayTest/time.txt', 'w') # 퀴즈 시간값 파일 저장으로 넘겨줌 경로 주의
     f5.write("%d" %(now.tm_min*60 + now.tm_sec+int(_time)))
     f5.close()
     return render_template('start_quiz.html', question=_question, option1 = _option1, option2 = _option2, quiz_time = _time)
@@ -56,7 +57,7 @@ def Show_Result():
 
     # 응답 결과 집계 #
     for mac in mac_list:
-        read_dir = '/Users/songjihye/Desktop/' + mac + '.csv' # 경로 주의
+        read_dir = 'C:/DelayTest/' + mac + '.csv'
         f = open(read_dir, 'r')
         csv_reader = csv.reader(f)
         for line in csv_reader :

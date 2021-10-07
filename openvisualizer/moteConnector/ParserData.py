@@ -34,6 +34,7 @@ class ParserData(Parser.Parser):
     PDRs = {0x0:0, 0x4:0, 0x10:0, 0x15:0, 0x20:0, 0x23:0, 0x24:0, 0xe6:0, 0x28:0, 0x29:0, 0x31:0, 0x36:0, 0xab:0,
                     0x46:0, 0x47:0, 0x65:0, 0x67:0, 0x73:0, 0x76:0, 0x85:0, 0x94:0, 0x1c:0, 0x3a:0, 0x3b:0, 0x5b:0, 0x6c:0, 0x7d:0,
                     0x9a:0, 0x9d:0, 0xa4:0, 0xa8:0, 0xd0:0, 0xde:0, 0xdf:0, 0xe1:0, 0xe7:0, 0xe8:0, 0xee:0, 0xf5:0, 0xfc:0, 0xa1:0}
+    
     def __init__(self):
         # log
         log.info("create instance")
@@ -129,7 +130,7 @@ class ParserData(Parser.Parser):
                 for key in self.PDRs:
                     empty_str += "%d," %(self.PDRs[key])
                     PDRSum += self.PDRs[key]
-                PDRrate = float(self.COUNT)/1620.0
+                PDRrate = float(self.COUNT)/7020.0
                 empty_str += '%f\n' %(PDRrate)
                 f2.write(empty_str)
                 f1.close()
