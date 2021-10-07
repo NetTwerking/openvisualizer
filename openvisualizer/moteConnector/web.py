@@ -23,11 +23,9 @@ plt.rcParams['axes.unicode_minus'] = False
 
 app = Flask(__name__)
 
-
-mac_list = ['0x67','0xd0']
+mac_list = ['0x4','0x28','0xab']
 x_label = ["o", "x"]
-quiz = ["기본"]
-
+quiz = ["결과입니다"]
 
 @app.route('/', methods=['GET','POST'])
 @app.route('/index', methods=['GET','POST'])
@@ -63,29 +61,6 @@ def Start_Quiz():
 @app.route('/results', methods=['GET','POST'])
 def Show_Result():
     result_list = []
-    for mac in mac_list:
-        read_dir = 'C:/DelayTest/' + mac + '.csv'
-        f = open(read_dir, 'r')
-        csv_reader = csv.reader(f)
-        for line in csv_reader :
-            print(line[1])
-            result_list.append([line[0],line[1],line[2]])
-        f.close()
-    print("1111")
-    result_list = sorted(result_list, key=lambda result : result[2])
-    date = datetime.datetime.now().replace(microsecond=0)
-
-    return render_template('results.html', result_list = result_list, mac_list = mac_list, date = date) 
-
-@app.route('/plot')
-def plot():
-    plt.switch_backend('Agg')
- 
-    #통계 내기
-    x_data = [1, 2]
-    #x_label = [option_o, option_x]
-    colors = ['#0d6efd', '#ff9999']
-    
     o = 0
     x = 0
     for mac in mac_list:
@@ -93,43 +68,23 @@ def plot():
         f = open(read_dir, 'r')
         csv_reader = csv.reader(f)
         for line in csv_reader :
+            print(line[1])
+            result_list.append([line[0],line[1],line[2]])
             if line[1] == "O":
                 o = o+1
             else:
                 x = x+1
         f.close()
+        
+        o_ratio = int(o/(o+x)*100)
+        x_ratio = int(x/(o+x)*100)
 
-    y = [o,x]
+    result_list = sorted(result_list, key=lambda result : result[2])
+    date = datetime.datetime.now().replace(microsecond=0)
 
-    # 그림판 준비, 막대 그래프
-    fig, axis = plt.subplots(1)
-
-    # 그리기
-    #plt.subplot(1,2,1)
-    #plt.xticks(x_data,x_label)
-    #axis[0].bar(x_data,y,color=colors,width=0.4)
-    #axis[0].set_title("Answer List")
-    canvas = FigureCanvas(fig)
-    
-    ratio = []
-    ratio.append(int(o/(o+x)*100))
-    ratio.append(int(x/(o+x)*100))
-    explode = [0.05, 0.05]
-
-    plt.title(quiz[0])
-
-    #axis.bar(x_data, y)
-    axis.pie(ratio, labels=x_label, colors=colors, explode=explode, shadow=True, autopct='%.1f%%')
-    
-    plt.show()
-    # 그려진 img 파일 내용을 html 랜더링 쪽에 전송한다.
-    img = BytesIO()
-    fig.savefig(img)
-    img.seek(0)
-    
-    return send_file(img, mimetype='image/png')
+    return render_template('results.html', result_list = result_list, mac_list = mac_list, date = date, o = o_ratio, x = x_ratio,
+    question = quiz[0], option1 = x_label[0], option2 = x_label[1]) 
 
 
 if __name__ == '__main__':
     app.run()
-
