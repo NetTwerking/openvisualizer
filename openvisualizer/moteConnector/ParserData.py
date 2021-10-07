@@ -30,11 +30,11 @@ class ParserData(Parser.Parser):
     aggregation = {0x0:0, 0x4:0, 0x10:0, 0x15:0, 0x20:0, 0x23:0, 0x24:0, 0xe6:0, 0x28:0, 0x29:0, 0x31:0, 0x36:0, 0xab:0,
                     0x46:0, 0x47:0, 0x65:0, 0x67:0, 0x73:0, 0x76:0, 0x85:0, 0x94:0, 0x1c:0, 0x3a:0, 0x3b:0, 0x5b:0, 0x6c:0, 0x7d:0,
                     0x9a:0, 0x9d:0, 0xa4:0, 0xa8:0, 0xd0:0, 0xde:0, 0xdf:0, 0xe1:0, 0xe7:0, 0xe8:0, 0xee:0, 0xf5:0, 0xfc:0, 0xa1:0}
-
+    
     PDRs = {0x0:0, 0x4:0, 0x10:0, 0x15:0, 0x20:0, 0x23:0, 0x24:0, 0xe6:0, 0x28:0, 0x29:0, 0x31:0, 0x36:0, 0xab:0,
                     0x46:0, 0x47:0, 0x65:0, 0x67:0, 0x73:0, 0x76:0, 0x85:0, 0x94:0, 0x1c:0, 0x3a:0, 0x3b:0, 0x5b:0, 0x6c:0, 0x7d:0,
                     0x9a:0, 0x9d:0, 0xa4:0, 0xa8:0, 0xd0:0, 0xde:0, 0xdf:0, 0xe1:0, 0xe7:0, 0xe8:0, 0xee:0, 0xf5:0, 0xfc:0, 0xa1:0}
-    
+ 
     def __init__(self):
         # log
         log.info("create instance")
@@ -45,7 +45,8 @@ class ParserData(Parser.Parser):
         self._asn= ['asn_4',                     # B
           'asn_2_3',                   # H
           'asn_0_1',                   # H
-         ]
+        ]
+        # need to create folder -> C:/DelayTest
         f1 = open('C:/DelayTest/result.csv', 'w')
         wr1 = csv.writer(f1)
         wr1.writerow(["MAC", "COUNT", "Current Delay(ms)", "Avg Delay(ms)", "Answer", "ASN", "Aggregation"])
@@ -60,8 +61,6 @@ class ParserData(Parser.Parser):
         f2.close()
 
     #======================== public ==========================================
-    def getInfo(self, MAC, COUNT, CURRENT_DELAY, AVG_DELAY, ANSWER):
-        return MAC, COUNT, CURRENT_DELAY, AVG_DELAY, ANSWER
     def parseInput(self,input):
         # log
         if log.isEnabledFor(logging.DEBUG):
@@ -104,14 +103,14 @@ class ParserData(Parser.Parser):
         if len(input) >37:
             if self.CLICKER_MASK1 == ''.join(chr(i) for i in input[-4:]):
                 #answer   = ''.join(chr(i) for i in input[-7:])
-                answer = chr(input[-6])
-                MAC = hex(input[-5])
-                PDR = input[-7]
+                answer = chr(input[-6]) # answer in payload
+                MAC = hex(input[-5]) # moteid in payload
+                PDR = input[-7] 
                 if self.PDRs[input[-5]] != PDR:
                     self.PDRs[input[-5]] = PDR
                     self.COUNT += 1
                 aux      = input[len(input)-14:len(input)-9]  # last 5 bytes of the packet are the ASN in the UDP latency packet
-                diff     = self._asndiference(aux,asnbytes)   # calculate difference 
+                diff     = self._asndiference(aux,asnbytes)   # calculate ASN difference 
                 timeinus = diff*self.MSPERSLOT                # compute time in ms
                 SN       = input[len(input)-9:len(input)-7]   # SN sent by mote
                 l3_source= "{0:x}{1:x}".format(input[len(input)-16], input[len(input)-15]) # mote id
@@ -125,6 +124,7 @@ class ParserData(Parser.Parser):
                 self.aggregation[input[-5]] += 1
                 wr1 = csv.writer(f1)
                 wr1.writerow([MAC, self.COUNT, diff * 10, self.SUM/self.COUNT * 10, answer, self.Calc_Asn(aux), self.aggregation[input[-5]]])
+                # mote id, delay, entire Count(visualizer received), avg delay, answer, ASN in payload, count in payload
                 PDRSum=0
                 empty_str = ""
                 for key in self.PDRs:
@@ -135,7 +135,7 @@ class ParserData(Parser.Parser):
                 f2.write(empty_str)
                 f1.close()
                 f2.close()
-                f3 = open('C:/DelayTest/time.txt', 'r')
+                f3 = open('C:/DelayTest/time.txt', 'r') # in clicker system, during question time, only recieved packet 
                 now = time.localtime()
                 now_time = now.tm_sec + (now.tm_min*60)
                 txt_time = f3.readline()
