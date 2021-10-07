@@ -52,6 +52,32 @@ def Start_Quiz(): # Show_Quiz()에서 넘겨온 정보 출력
 @app.route('/results', methods=['GET','POST'])
 def Show_Result():
     result_list = []
+<<<<<<< HEAD
+    for mac in mac_list:
+        read_dir = 'C:/DelayTest/' + mac + '.csv'
+        f = open(read_dir, 'r')
+        csv_reader = csv.reader(f)
+        for line in csv_reader :
+            print(line[1])
+            result_list.append([line[0],line[1],line[2]])
+        f.close()
+
+    result_list = sorted(result_list, key=lambda result : result[2])
+    date = datetime.datetime.now().replace(microsecond=0)
+
+    return render_template('results.html', result_list = result_list, mac_list = mac_list, date = date) 
+
+@app.route('/plot')
+def plot():
+    plt.switch_backend('Agg')
+
+    #통계 내기
+    x_data = [1, 2]
+    #x_label = [option_o, option_x]
+    colors = ['#0d6efd', '#ff9999']
+
+=======
+>>>>>>> 6cea75aade06d4e17f279a1910dc6ede7e8e2421
     o = 0
     x = 0
 
